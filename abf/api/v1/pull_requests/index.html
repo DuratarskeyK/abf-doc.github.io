@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en2">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Language" content="en-us" />
+  <meta http-equiv="imagetoolbar" content="false" />
+  <meta name="MSSmartTagsPreventParsing" content="true" />
+  <title>Pull Requests | ABF API</title>
+  <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+  <link href="/css/960.css" rel="stylesheet" type="text/css" />
+  <link href="/css/uv_active4d.css" rel="stylesheet" type="text/css" />
+  <link href="/shared/css/documentation.css" media="screen" rel="stylesheet" type="text/css">
+  <link href="/shared/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="/shared/js/jquery.js" type="text/javascript"></script>
+  <script src="/shared/js/documentation.js" type="text/javascript"></script>
+</head>
+<body class="api">
+    <div id="header-wrapper">
+      <div id="header">
+        <div>
+          <a class="logo" href="/"><img src="/images/logo_developer.png" width="255" height="45" /></a>
+          <ul class="nav">
+            <li><a href="https://abf.rosalinux.ru/contact">Support</a></li>
+          </ul>
+        </div>
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+
+    <div id="wrapper">
+      <div class="content">
+    <h1 id="pull-requests-api">Pull Requests API</h1>
+
+<ul>
+  <li><a href="#list-pull-requests">List pull requests</a></li>
+  <li><a href="#list-pull-requests-for-a-project">List pull requests for a project</a></li>
+  <li><a href="#get-a-single-pull-request">Get a single pull request</a></li>
+  <li><a href="#create-a-pull-request">Create a pull request</a></li>
+  <li><a href="#update-a-single-pull-request">Update a single pull request</a></li>
+  <li><a href="#list-commits-on-a-pull-request">List commits on a pull request</a></li>
+  <li><a href="#list-pull-requests-files">List pull requests files</a></li>
+  <li><a href="#merge-a-single-pull-request">Merge a single pull request</a></li>
+</ul>
+
+<h2 id="list-pull-requests">List pull requests</h2>
+
+<p>List all pull requests across all the authenticated user’s projects including owned projects, member projects, and group projects:</p>
+
+<pre><code>GET /api/v1/pull_requests.json
+</code></pre>
+
+<p>List all pull requests across owned and member projects for the authenticated user:</p>
+
+<pre><code>GET /api/v1/user/pull_requests.json
+</code></pre>
+
+<p>List all pull requests for a given group for the authenticated user:</p>
+
+<pre><code>GET /api/v1/group/:id/pull_requests.json
+</code></pre>
+
+<h3 id="parameters">Parameters</h3>
+
+<dl>
+  <dt>filter</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong>
+</dd>
+  <dd>
+    <ul>
+      <li>
+<code>assigned</code>: Pull requests assigned to you (default)</li>
+      <li>
+<code>created</code>: Pull requests created by you</li>
+      <li>
+<code>all</code>: All pull requests the authenticated user can see</li>
+    </ul>
+  </dd>
+  <dt>status</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong> <code>open</code> (default), <code>closed</code>
+</dd>
+  <dt>sort</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong> <code>submitted</code> (default), <code>updated</code>.</dd>
+  <dt>direction</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong> <code>asc</code> or <code>desc</code> (default).</dd>
+  <dt>since</dt>
+  <dd>
+<em>Optional</em> <strong>Integer</strong> of a timestamp in Unix time format.</dd>
+</dl>
+
+<h3 id="response">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_requests"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"number"</span><span class="o">:</span> <span class="s2">"serial number"</span><span class="p">,</span>
+      <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"title"</span><span class="p">,</span>
+      <span class="s2">"to_ref"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"reference"</span><span class="p">,</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"sha"</span><span class="p">,</span>
+        <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"project name"</span><span class="p">,</span>
+          <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"visibility (open/hidden)"</span><span class="p">,</span>
+          <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"project fullname"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to project data page"</span><span class="p">,</span>
+          <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"path to project git"</span><span class="p">,</span>
+          <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"path to project git over ssh"</span><span class="p">,</span>
+          <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+            <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"user email"</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"from_ref"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"reference"</span><span class="p">,</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"sha"</span><span class="p">,</span>
+        <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"project name"</span><span class="p">,</span>
+          <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"visibility (open/hidden)"</span><span class="p">,</span>
+          <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"project fullname"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to project data page"</span><span class="p">,</span>
+          <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"path to project git"</span><span class="p">,</span>
+          <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"path to project git over ssh"</span><span class="p">,</span>
+          <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+            <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"user email"</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"pull request status"</span><span class="p">,</span>
+      <span class="s2">"owner"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span>
+      <span class="p">},</span>
+      <span class="s2">"assignee"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span>
+      <span class="p">},</span>
+      <span class="s2">"merged_at"</span><span class="o">:</span> <span class="s2">"merged at date and time"</span><span class="p">,</span>
+      <span class="s2">"mergeable"</span><span class="o">:</span> <span class="s2">"can be automatically merged"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to pull request data page"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to pull request data"</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_requests"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"number"</span><span class="o">:</span> <span class="s2">"11"</span><span class="p">,</span>
+      <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"new feature"</span><span class="p">,</span>
+      <span class="s2">"to_ref"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"update-version"</span><span class="p">,</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"3d1468bbb339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+        <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"evil_tools"</span><span class="p">,</span>
+          <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+          <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"abf/evil_tools"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/666.json"</span><span class="p">,</span>
+          <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"https:/ivan@abf.rosalinux.ru/jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+          <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"git@abf.rosalinux.ru:jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+          <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+            <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"ivan.aivazovsky@email.ru "</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"from_ref"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"update-rails"</span><span class="p">,</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"3d1468bbb339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+        <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"evil_tools"</span><span class="p">,</span>
+          <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+          <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"abf/evil_tools"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/666.json"</span><span class="p">,</span>
+          <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"https:/ivan@abf.rosalinux.ru/jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+          <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"git@abf.rosalinux.ru:jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+          <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+            <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"ivan.aivazovsky@email.ru "</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+      <span class="s2">"owner"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span>
+      <span class="p">},</span>
+      <span class="s2">"assignee"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span>
+      <span class="p">},</span>
+      <span class="s2">"merged_at"</span><span class="o">:</span> <span class="s2">"1348170705"</span><span class="p">,</span>
+      <span class="s2">"mergeable"</span><span class="o">:</span> <span class="s2">"true"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/3/pull_requests/11.json"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/3/pull_requests.json"</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="list-pull-requests-for-a-project">List pull requests for a project</h2>
+
+<pre><code>GET /api/v1/projects/:id/pull_requests.json
+</code></pre>
+
+<h3 id="parameters-1">Parameters</h3>
+
+<dl>
+  <dt>status</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong> <code>open</code> (default), <code>closed</code>
+</dd>
+  <dt>assignee</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong>
+</dd>
+  <dd>
+    <ul>
+      <li>
+<em>String</em> User nickname</li>
+      <li>
+<code>none</code> for Issues with no assigned User.</li>
+      <li>
+<code>*</code> for Issues with any assigned User.</li>
+    </ul>
+  </dd>
+  <dt>creator</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong> User nickname.</dd>
+  <dt>sort</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong> <code>submitted</code> (default), <code>updated</code>.</dd>
+  <dt>direction</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong> <code>asc</code> or <code>desc</code> (default).</dd>
+  <dt>since</dt>
+  <dd>
+<em>Optional</em> <strong>Integer</strong> of a timestamp in Unix time format.</dd>
+</dl>
+
+<h3 id="response-1">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_requests"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"number"</span><span class="o">:</span> <span class="s2">"serial number"</span><span class="p">,</span>
+      <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"title"</span><span class="p">,</span>
+      <span class="s2">"to_ref"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"reference"</span><span class="p">,</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"sha"</span><span class="p">,</span>
+        <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"project name"</span><span class="p">,</span>
+          <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"visibility (open/hidden)"</span><span class="p">,</span>
+          <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"project fullname"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to project data page"</span><span class="p">,</span>
+          <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"path to project git"</span><span class="p">,</span>
+          <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"path to project git over ssh"</span><span class="p">,</span>
+          <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+            <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"user email"</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"from_ref"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"reference"</span><span class="p">,</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"sha"</span><span class="p">,</span>
+        <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"project name"</span><span class="p">,</span>
+          <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"visibility (open/hidden)"</span><span class="p">,</span>
+          <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"project fullname"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to project data page"</span><span class="p">,</span>
+          <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"path to project git"</span><span class="p">,</span>
+          <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"path to project git over ssh"</span><span class="p">,</span>
+          <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+            <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"user email"</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"pull request status"</span><span class="p">,</span>
+      <span class="s2">"owner"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span>
+      <span class="p">},</span>
+      <span class="s2">"assignee"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span>
+      <span class="p">},</span>
+      <span class="s2">"merged_at"</span><span class="o">:</span> <span class="s2">"merged at date and time"</span><span class="p">,</span>
+      <span class="s2">"mergeable"</span><span class="o">:</span> <span class="s2">"can be automatically merged"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to pull request data page"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to pull request data"</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-1">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_requests"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"number"</span><span class="o">:</span> <span class="s2">"11"</span><span class="p">,</span>
+      <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"new feature"</span><span class="p">,</span>
+      <span class="s2">"to_ref"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"update-version"</span><span class="p">,</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"3d1468bbb339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+        <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"evil_tools"</span><span class="p">,</span>
+          <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+          <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"abf/evil_tools"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/666.json"</span><span class="p">,</span>
+          <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"https:/ivan@abf.rosalinux.ru/jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+          <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"git@abf.rosalinux.ru:jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+          <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+            <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"ivan.aivazovsky@email.ru "</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"from_ref"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"update-rails"</span><span class="p">,</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"3d1468bbb339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+        <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"evil_tools"</span><span class="p">,</span>
+          <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+          <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"abf/evil_tools"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/666.json"</span><span class="p">,</span>
+          <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"https:/ivan@abf.rosalinux.ru/jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+          <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"git@abf.rosalinux.ru:jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+          <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+            <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"ivan.aivazovsky@email.ru "</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+      <span class="s2">"owner"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span>
+      <span class="p">},</span>
+      <span class="s2">"assignee"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span>
+      <span class="p">},</span>
+      <span class="s2">"merged_at"</span><span class="o">:</span> <span class="s2">"1348170705"</span><span class="p">,</span>
+      <span class="s2">"mergeable"</span><span class="o">:</span> <span class="s2">"true"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/3/pull_requests/11.json"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/3/pull_requests.json"</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="get-a-single-pull-request">Get a single pull request</h2>
+
+<pre><code>GET /api/v1/projects/:project_id/pull_requests/:number.json
+</code></pre>
+
+<h3 id="parameters-2">Parameters:</h3>
+
+<dl>
+  <dt>project_id</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current project.</dd>
+  <dt>number</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current pull request.</dd>
+</dl>
+
+<h3 id="response-2">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"number"</span><span class="o">:</span> <span class="s2">"serial number"</span><span class="p">,</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"title"</span><span class="p">,</span>
+    <span class="s2">"to_ref"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"reference"</span><span class="p">,</span>
+      <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"sha"</span><span class="p">,</span>
+      <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"project name"</span><span class="p">,</span>
+        <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"visibility (open/hidden)"</span><span class="p">,</span>
+        <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"project fullname"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to project data page"</span><span class="p">,</span>
+        <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"path to project git"</span><span class="p">,</span>
+        <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"path to project git over ssh"</span><span class="p">,</span>
+        <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+          <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span><span class="p">,</span>
+          <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"user email"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"from_ref"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"reference"</span><span class="p">,</span>
+      <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"sha"</span><span class="p">,</span>
+      <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"project name"</span><span class="p">,</span>
+        <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"visibility (open/hidden)"</span><span class="p">,</span>
+        <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"project fullname"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to project data page"</span><span class="p">,</span>
+        <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"path to project git"</span><span class="p">,</span>
+        <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"path to project git over ssh"</span><span class="p">,</span>
+        <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+          <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span><span class="p">,</span>
+          <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"user email"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"pull request status"</span><span class="p">,</span>
+    <span class="s2">"owner"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+      <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span>
+    <span class="p">},</span>
+    <span class="s2">"assignee"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+      <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span>
+    <span class="p">},</span>
+    <span class="s2">"merged_at"</span><span class="o">:</span> <span class="s2">"merged at date and time"</span><span class="p">,</span>
+    <span class="s2">"mergeable"</span><span class="o">:</span> <span class="s2">"can be automatically merged"</span><span class="p">,</span>
+    <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to pull request data page"</span><span class="p">,</span>
+    <span class="s2">"body"</span><span class="o">:</span> <span class="s2">"body"</span><span class="p">,</span>
+    <span class="s2">"closed_at"</span><span class="o">:</span> <span class="s2">"closed at date and time"</span><span class="p">,</span>
+    <span class="s2">"closed_by"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+      <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span>
+    <span class="p">},</span>
+    <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"created at date and time"</span><span class="p">,</span>
+    <span class="s2">"updated_at"</span><span class="o">:</span> <span class="s2">"updated at date and time"</span><span class="p">,</span>
+    <span class="s2">"merged_by"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+      <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-2">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"number"</span><span class="o">:</span> <span class="s2">"11"</span><span class="p">,</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"new feature"</span><span class="p">,</span>
+    <span class="s2">"to_ref"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"update-version"</span><span class="p">,</span>
+      <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"3d1468bbb339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+      <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"evil_tools"</span><span class="p">,</span>
+        <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+        <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"abf/evil_tools"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/666.json"</span><span class="p">,</span>
+        <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"https:/ivan@abf.rosalinux.ru/jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+        <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"git@abf.rosalinux.ru:jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+        <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+          <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span><span class="p">,</span>
+          <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"ivan.aivazovsky@email.ru "</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"from_ref"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"ref"</span><span class="o">:</span> <span class="s2">"update-rails"</span><span class="p">,</span>
+      <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"3d1468bbb339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+      <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"evil_tools"</span><span class="p">,</span>
+        <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+        <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"abf/evil_tools"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/666.json"</span><span class="p">,</span>
+        <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"https:/ivan@abf.rosalinux.ru/jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+        <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"git@abf.rosalinux.ru:jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+        <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+          <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span><span class="p">,</span>
+          <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"ivan.aivazovsky@email.ru "</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+    <span class="s2">"owner"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+      <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span>
+    <span class="p">},</span>
+    <span class="s2">"assignee"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+      <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span>
+    <span class="p">},</span>
+    <span class="s2">"merged_at"</span><span class="o">:</span> <span class="s2">"1348170705"</span><span class="p">,</span>
+    <span class="s2">"mergeable"</span><span class="o">:</span> <span class="s2">"true"</span><span class="p">,</span>
+    <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/3/pull_requests/11.json"</span><span class="p">,</span>
+    <span class="s2">"body"</span><span class="o">:</span> <span class="s2">"new cool feature for us"</span><span class="p">,</span>
+    <span class="s2">"closed_at"</span><span class="o">:</span> <span class="s2">"1348170705"</span><span class="p">,</span>
+    <span class="s2">"closed_by"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+      <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span>
+    <span class="p">},</span>
+    <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"1348168705"</span><span class="p">,</span>
+    <span class="s2">"updated_at"</span><span class="o">:</span> <span class="s2">"1348170705"</span><span class="p">,</span>
+    <span class="s2">"merged_by"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+      <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="create-a-pull-request">Create a pull request</h2>
+
+<p>Any authenticated user with read access to a project can create a pull request.</p>
+
+<pre><code>POST /api/v1/projects/:id/pull_requests.json
+</code></pre>
+
+<h3 id="input">Input</h3>
+
+<dl>
+  <dt>title</dt>
+  <dd>
+<em>Required</em> <strong>String</strong>
+</dd>
+  <dt>body</dt>
+  <dd>
+<em>Required</em> <strong>String</strong>
+</dd>
+  <dt>assignee_id</dt>
+  <dd>
+<em>Optional</em> <strong>Integer</strong> - Id for the user that this pull request should be
+assigned to. <em>NOTE: Only users with push access can set the assignee for
+pull request. The assignee is silently dropped otherwise.</em>
+</dd>
+  <dt>to_ref</dt>
+  <dd>
+<em>Required</em> <strong>String</strong> the branch (or git ref) you want your changes pulled into.
+This should be an existing branch on the current repository.
+You cannot submit a pull request to one repo that requests a merge to a base of another repo.</dd>
+  <dt>from_project_id</dt>
+  <dd>_Optional <strong>Integer</strong> Identifier project where your changes are implemented. Default current project.</dd>
+  <dt>from_ref</dt>
+  <dd>
+<em>Required</em> <strong>String</strong> the branch (or git ref) where your changes are implemented.</dd>
+</dl>
+
+<h3 id="request">Request:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"fix security bug"</span><span class="p">,</span>
+    <span class="s2">"body"</span><span class="o">:</span> <span class="s2">"fixed at 123456"</span><span class="p">,</span>
+    <span class="s2">"assignee_id"</span><span class="o">:</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="s2">"to_ref"</span><span class="o">:</span> <span class="s2">"master"</span><span class="p">,</span>
+    <span class="s2">"from_project_id"</span><span class="o">:</span> <span class="mi">93862</span><span class="p">,</span>
+    <span class="s2">"from_ref"</span><span class="o">:</span> <span class="s2">"new_branch"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="response-3">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"number"</span><span class="o">:</span> <span class="s2">"pull request number (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="examples">Examples:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"number"</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Pull request has been created successfully"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="update-a-single-pull-request">Update a single pull request</h2>
+
+<pre><code>PUT /api/v1/projects/:id/pull_requests/:number.json
+</code></pre>
+
+<h3 id="parameters-3">Parameters:</h3>
+
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current project.</dd>
+  <dt>number</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current pull request.</dd>
+</dl>
+
+<h3 id="input-1">Input:</h3>
+
+<dl>
+  <dt>title</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong>
+</dd>
+  <dt>body</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong>
+</dd>
+  <dt>assignee_id</dt>
+  <dd>
+<em>Optional</em> <strong>Integer</strong> - Identifier for the user that this pull request should be
+assigned to.</dd>
+  <dt>status</dt>
+  <dd>
+<em>Optional</em> <strong>String</strong> - State of the pull request: <code>closed</code> or <code>reopen</code>.</dd>
+</dl>
+
+<h3 id="request-1">Request:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"fix security bug"</span><span class="p">,</span>
+    <span class="s2">"body"</span><span class="o">:</span> <span class="s2">"fixed at 123456"</span><span class="p">,</span>
+    <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"closed"</span><span class="p">,</span>
+    <span class="s2">"assignee_id"</span><span class="o">:</span> <span class="mi">15</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="response-4">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"number"</span><span class="o">:</span> <span class="s2">"pull request number (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-3">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"number"</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Pull request has been updated successfully"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="list-commits-on-a-pull-request">List commits on a pull request</h2>
+
+<pre><code>GET /api/v1/projects/:id/pull_requests/:number/commits.json
+</code></pre>
+
+<h3 id="parameters-4">Parameters:</h3>
+
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current project.</dd>
+  <dt>number</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current pull request.</dd>
+</dl>
+
+<h3 id="response-5">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"commits"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"commit sha"</span><span class="p">,</span>
+      <span class="s2">"https_url"</span><span class="o">:</span> <span class="s2">"commit url"</span><span class="p">,</span>
+      <span class="s2">"author"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"author name"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"author email"</span><span class="p">,</span>
+        <span class="s2">"date"</span><span class="o">:</span> <span class="s2">"authored date"</span>
+      <span class="p">},</span>
+      <span class="s2">"committer"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"committer name"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"committer email"</span><span class="p">,</span>
+        <span class="s2">"date"</span><span class="o">:</span> <span class="s2">"committed date"</span>
+      <span class="p">},</span>
+      <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Fix all the bugs"</span><span class="p">,</span>
+      <span class="s2">"tree"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"commit sha"</span><span class="p">,</span>
+        <span class="s2">"https_url"</span><span class="o">:</span> <span class="s2">"tree url"</span>
+      <span class="p">},</span>
+      <span class="s2">"parents"</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"commit sha"</span><span class="p">,</span>
+          <span class="s2">"https_url"</span><span class="o">:</span> <span class="s2">"tree url"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-4">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"commits"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"4c2553a5a339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+      <span class="s2">"https_url"</span><span class="o">:</span> <span class="s2">"https://abf.rosalinux.ru/abf/rosa-build/commit/4c2553a5a339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+      <span class="s2">"author"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"abf"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"abf@test.ru"</span><span class="p">,</span>
+        <span class="s2">"date"</span><span class="o">:</span> <span class="s2">"1348168705"</span>
+      <span class="p">},</span>
+      <span class="s2">"committer"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"abf"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"abf@test.ru"</span><span class="p">,</span>
+        <span class="s2">"date"</span><span class="o">:</span> <span class="s2">"1348168705"</span>
+      <span class="p">},</span>
+      <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Fix all the bugs"</span><span class="p">,</span>
+      <span class="s2">"tree"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"4c2553a5a339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+        <span class="s2">"https_url"</span><span class="o">:</span> <span class="s2">"https://abf.rosalinux.ru/abf/rosa-build/tree/4c2553a5a339c8b59234a5bbc35dedf3d89c2043"</span>
+      <span class="p">},</span>
+      <span class="s2">"parents"</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"20056fbc319722cc64cf7e718b22607693e7f0b0"</span><span class="p">,</span>
+          <span class="s2">"https_url"</span><span class="o">:</span> <span class="s2">"https://abf.rosalinux.ru/abf/rosa-build/commit/20056fbc319722cc64cf7e718b22607693e7f0b0"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="list-pull-requests-files">List pull requests files</h2>
+
+<pre><code>GET /api/v1/projects/:id/pull_requests/:number/files.json
+</code></pre>
+
+<h3 id="parameters-5">Parameters:</h3>
+
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current project.</dd>
+  <dt>number</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current pull request.</dd>
+</dl>
+
+<h3 id="response-6">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"files"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"sha"</span><span class="p">,</span>
+      <span class="s2">"filename"</span><span class="o">:</span> <span class="s2">"file name"</span><span class="p">,</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"file status"</span><span class="p">,</span>
+      <span class="s2">"additions"</span><span class="o">:</span> <span class="s2">"additional lines count"</span><span class="p">,</span>
+      <span class="s2">"deletions"</span><span class="o">:</span> <span class="s2">"deletions lines count"</span><span class="p">,</span>
+      <span class="s2">"changes"</span><span class="o">:</span> <span class="s2">"total lines changes"</span><span class="p">,</span>
+      <span class="s2">"blob_https_url"</span><span class="o">:</span> <span class="s2">"blob url"</span><span class="p">,</span>
+      <span class="s2">"raw_https_url"</span><span class="o">:</span> <span class="s2">"raw file url"</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-5">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"files"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"sha"</span><span class="o">:</span> <span class="s2">"473cca87b339c8b59234a5bbc35dedf3d89c2043"</span><span class="p">,</span>
+      <span class="s2">"filename"</span><span class="o">:</span> <span class="s2">"test.log"</span><span class="p">,</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"added"</span><span class="p">,</span>
+      <span class="s2">"additions"</span><span class="o">:</span> <span class="s2">"42"</span><span class="p">,</span>
+      <span class="s2">"deletions"</span><span class="o">:</span> <span class="s2">"24"</span><span class="p">,</span>
+      <span class="s2">"changes"</span><span class="o">:</span> <span class="s2">"66"</span><span class="p">,</span>
+      <span class="s2">"blob_https_url"</span><span class="o">:</span> <span class="s2">"https://abf.rosalinux.ru/abf/rosa-build/blob/master/Gemfile"</span><span class="p">,</span>
+      <span class="s2">"raw_https_url"</span><span class="o">:</span> <span class="s2">"https://abf.rosalinux.ru/abf/rosa-build/raw/master/Gemfile"</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="merge-a-single-pull-request">Merge a single pull request</h2>
+
+<pre><code>PUT /api/v1/projects/:id/pull_requests/:number/merge.json
+</code></pre>
+
+<h3 id="parameters-6">Parameters:</h3>
+
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current project.</dd>
+  <dt>number</dt>
+  <dd>
+<em>Required</em> <strong>Integer</strong> identifier of current pull request.</dd>
+</dl>
+
+<h3 id="input-2">Input:</h3>
+
+<dl>
+  <dt>commit_message</dt>
+  <dd>
+<em>Optional</em> <strong>string</strong> the message that will be used for the merge commit</dd>
+</dl>
+
+<h3 id="request-2">Request:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"commit_message"</span><span class="o">:</span> <span class="s2">"commit message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="response-7">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"number"</span><span class="o">:</span> <span class="s2">"pull request number (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-6">Example:</h3>
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"pull_request"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"number"</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Pull request has been merged successfully"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+      </div>
+
+    <div id="js-sidebar" class="sidebar-shell">
+      <div class="js-toggle-list sidebar-module expandable">
+        <ul>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/abf/">ABF</a></h3>
+            <ul class="js-guides">
+              <li><a href="/abf/api/">API</a></li>
+              <li class='submenu'><a href="/abf/api/v1/advisories/">Advisories</a></li>
+              <li class='submenu'><a href="/abf/api/v1/architectures/">Architectures</a></li>
+              <li class='submenu'><a href="/abf/api/v1/build_lists/">Build lists</a></li>
+              <li class='submenu'><a href="/abf/api/v1/groups/">Groups</a></li>
+              <li class='submenu'><a href="/abf/api/v1/issues/">Issues</a></li>
+              <li class='submenu'><a href="/abf/api/v1/maintainers/">Maintainers</a></li>
+              <li class='submenu'><a href="/abf/api/v1/platforms/">Platforms</a></li>
+              <li class='submenu'><a href="/abf/api/v1/products/">Products</a></li>
+              <li class='submenu'><a href="/abf/api/v1/product_build_lists/">Product Build Lists</a></li>
+              <li class='submenu'><a href="/abf/api/v1/projects/">Projects</a></li>
+              <li class='submenu'><a href="/abf/api/v1/pull_requests/">Pull Requests</a></li>
+              <li class='submenu'><a href="/abf/api/v1/repositories/">Repositories</a></li>
+              <li class='submenu'><a href="/abf/api/v1/search/">Search</a></li>
+              <li class='submenu'><a href="/abf/api/v1/users/">Users</a></li>
+
+              <li><a href="/abf/file_store_integration/">Integration with FileStore (.abf.yml)</a></li>
+              <li><a href="/abf/iso_build/">ISO build environment</a></li>
+
+              <li><a href="/abf/scripts/">Package build environment</a></li>
+              <li class='submenu'><a href="/abf/scripts/assembly_of_packages/">Assembly of packages</a></li>
+              <li class='submenu'><a href="/abf/scripts/publication_of_packages/">Publication of packages</a></li>
+
+              <li><a href="/abf/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/abf/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf/deployment/rels_centos/">RELS/CentOS</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf/deployment/ubuntu/">Ubuntu</a>
+              </li>
+            </ul>
+          </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/file_store/">File Store</a></h3>
+            <ul class="js-guides">
+              <li><a href="/file_store/api/">API</a></li>
+              <li class='submenu'><a href="/file_store/api/v1/files/">Files</a></li>
+
+              <li><a href="/file_store/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/file_store/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/file_store/deployment/manual/">Manual</a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/abf_worker/">ABF-Worker</a></h3>
+            <ul class="js-guides">
+              <li><a href="/abf_worker/build_boxes/">Build boxes</a></li>
+              <li><a href="/abf_worker/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/abf_worker/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf_worker/deployment/manual/">Manual</a>
+              </li>
+            </ul>
+          </li>
+
+        </ul>
+      </div> <!-- /sidebar-module -->
+      <div class="sidebar-module">
+        <p>
+          These websites are <a href="https://abf.rosalinux.ru" target="_blank">ABF</a>
+          and <a href="https://file-store.rosalinux.ru" target="_blank">File Store</a>
+        </p>
+      </div>
+    </div><!-- /sidebar-shell -->
+
+    </div><!-- #wrapper -->
+
+    <div id="footer" >
+      <div class="upper_footer">
+        <div class="footer_inner clearfix">
+          <h4 id="blacktocat">ABF Links</h4>
+        <ul class="footer_nav">
+          <h4>RosaLab</h4>
+		  <li><a href="http://www.rosalab.com/about">About</a></li>
+		  <li><a href="https://abf.rosalinux.ru/contact">Contact &amp; Support</a></li>
+        </ul>
+
+        <ul class="footer_nav">
+        </ul>
+
+        <ul class="footer_nav">
+        </ul>
+
+        <ul class="footer_nav">
+          <h4>Documentation</h4>
+		  <li><a href="http://wiki.rosalab.ru/en/index.php/ABF_Getting_Started">ABF Help</a></li>
+		  <li><a href="http://abf-doc.rosalinux.ru/">Developer API</a></li>
+        </ul>
+
+        </div><!-- /.site -->
+      </div><!-- /.upper_footer -->
+
+      <div class="lower_footer">
+        <div class="footer_inner clearfix">
+            <div id="legal">
+
+              <a class="home" href="http://abf.rosalinux.ru">Home</a>
+
+              <ul id="legal_links">
+              </ul>
+
+              <p>&copy; <span id="year">year</span> RosaLab. All rights reserved.</p>
+            </div><!-- /#legal or /#legal_ie-->
+        </div><!-- /.site -->
+      </div><!-- /.lower_footer -->
+    </div><!-- /#footer -->
+</body>
+</html>

@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en2">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Language" content="en-us" />
+  <meta http-equiv="imagetoolbar" content="false" />
+  <meta name="MSSmartTagsPreventParsing" content="true" />
+  <title>Build lists | ABF API</title>
+  <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+  <link href="/css/960.css" rel="stylesheet" type="text/css" />
+  <link href="/css/uv_active4d.css" rel="stylesheet" type="text/css" />
+  <link href="/shared/css/documentation.css" media="screen" rel="stylesheet" type="text/css">
+  <link href="/shared/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="/shared/js/jquery.js" type="text/javascript"></script>
+  <script src="/shared/js/documentation.js" type="text/javascript"></script>
+</head>
+<body class="api">
+    <div id="header-wrapper">
+      <div id="header">
+        <div>
+          <a class="logo" href="/"><img src="/images/logo_developer.png" width="255" height="45" /></a>
+          <ul class="nav">
+            <li><a href="https://abf.rosalinux.ru/contact">Support</a></li>
+          </ul>
+        </div>
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+
+    <div id="wrapper">
+      <div class="content">
+    <h1 id="build-lists-api">Build lists API</h1>
+
+<ul>
+  <li><a href="#get-a-single-build-list">Get a single build list</a></li>
+  <li><a href="#create-build-list">Create build list</a></li>
+  <li><a href="#cancel-build-list">Cancel build list</a></li>
+  <li><a href="#publish-build-list">Publish build list</a></li>
+  <li><a href="#publish-build-list-into-testing">Publish build list into testing</a></li>
+  <li><a href="#rerun-tests">Rerun tests</a></li>
+  <li><a href="#create-container">Create container</a></li>
+  <li><a href="#reject-publish-build-list">Reject publish build list</a></li>
+  <li><a href="#list-build-lists">List build lists</a></li>
+  <li><a href="#list-build-lists-for-a-project">List build lists for a project</a></li>
+  <li><a href="#destroy-build-list">Destroy build list</a></li>
+</ul>
+
+<h2 id="get-a-single-build-list">Get a single build list</h2>
+<p>Block “Logs” is available only for new core.<br>
+  The value of parameter “url” in block “Packages” is empty for old core.</p>
+
+<pre><code>GET /api/v1/build_lists/:id.json
+</code></pre>
+
+<h3 id="available-statuses-for-parameter-containerstatus">Available statuses for parameter “container_status”:</h3>
+<ul>
+  <li>
+<code>4000</code> — waiting for request for publishing container;</li>
+  <li>
+<code>6000</code> — container has been published;</li>
+  <li>
+<code>7000</code> — container is being published;</li>
+  <li>
+<code>8000</code> — publishing error.</li>
+</ul>
+
+<h3 id="parameters">Parameters:</h3>
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Integer</em> identifier of current build list</dd>
+</dl>
+
+<h3 id="response">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"resource id"</span><span class="p">,</span>
+    <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"status code"</span><span class="p">,</span>
+    <span class="s2">"container_status"</span><span class="o">:</span> <span class="s2">"container status code"</span><span class="p">,</span>
+    <span class="s2">"container_path"</span><span class="o">:</span> <span class="s2">"container path"</span><span class="p">,</span>
+    <span class="s2">"new_core"</span><span class="o">:</span> <span class="s2">"using new core"</span><span class="p">,</span>
+    <span class="s2">"package_version"</span><span class="o">:</span> <span class="s2">"package version"</span><span class="p">,</span>
+    <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"project name"</span><span class="p">,</span>
+      <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"visibility (open/hidden)"</span><span class="p">,</span>
+      <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"project fullname"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to project data page"</span><span class="p">,</span>
+      <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"path to project git"</span><span class="p">,</span>
+      <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"path to project git over ssh"</span><span class="p">,</span>
+      <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"user email"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"build_for_platform"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"platform id"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"platform name"</span><span class="p">,</span>
+      <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"platform visibility"</span><span class="p">,</span>
+      <span class="s2">"platform_type"</span><span class="o">:</span> <span class="s2">"platform type"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"platform data page path"</span>
+    <span class="p">},</span>
+    <span class="s2">"save_to_repository"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"repository for package storage id"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"repository for package storage name"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to repository data page"</span><span class="p">,</span>
+      <span class="s2">"platform"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"repository platform id"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"repository platform name"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to repository platform data page"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"arch"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build architecture id"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"build architecture name"</span>
+    <span class="p">},</span>
+    <span class="s2">"update_type"</span><span class="o">:</span> <span class="s2">"update type"</span><span class="p">,</span>
+    <span class="s2">"auto_publish_status"</span><span class="o">:</span> <span class="s2">"automated publising status"</span><span class="p">,</span>
+    <span class="s2">"auto_create_container"</span><span class="o">:</span> <span class="s2">"automated creation of container"</span><span class="p">,</span>
+    <span class="s2">"use_cached_chroot"</span><span class="o">:</span> <span class="s2">"use cached chroot"</span><span class="p">,</span>
+    <span class="s2">"use_extra_tests"</span><span class="o">:</span> <span class="s2">"use extra tests"</span><span class="p">,</span>
+    <span class="s2">"save_buildroot"</span><span class="o">:</span> <span class="s2">"save RPM buildroot"</span><span class="p">,</span>
+    <span class="s2">"commit_hash"</span><span class="o">:</span> <span class="s2">"last commit hash of project source"</span><span class="p">,</span>
+    <span class="s2">"last_published_commit_hash"</span><span class="o">:</span> <span class="s2">"last published commit hash of project source"</span><span class="p">,</span>
+    <span class="s2">"priority"</span><span class="o">:</span> <span class="s2">"build priority"</span><span class="p">,</span>
+    <span class="s2">"duration"</span><span class="o">:</span> <span class="s2">"build duration in seconds"</span><span class="p">,</span>
+    <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"created at date and time"</span><span class="p">,</span>
+    <span class="s2">"updated_at"</span><span class="o">:</span> <span class="s2">"updated at date and time"</span><span class="p">,</span>
+    <span class="s2">"advisory"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"advisory id"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"advisory name"</span><span class="p">,</span>
+      <span class="s2">"description"</span><span class="o">:</span> <span class="s2">"advisory description"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to advisory data page"</span>
+    <span class="p">},</span>
+    <span class="s2">"mass_build"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"mass_build id"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"mass_build name"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to mass_build data page"</span>
+    <span class="p">},</span>
+    <span class="s2">"user"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"id of user which created build"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to user profile"</span>
+    <span class="p">},</span>
+    <span class="s2">"publisher"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"publisher id"</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"publisher name"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to publisher profile"</span>
+    <span class="p">},</span>
+    <span class="s2">"include_repos"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"included repository id"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"included repository name"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to included repository data page"</span><span class="p">,</span>
+        <span class="s2">"platform"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"repository platform id"</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"repository platform name"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to repository platform data page"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"extra_repositories"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"extra repository id"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"extra repository name"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to extra repository data page"</span><span class="p">,</span>
+        <span class="s2">"platform"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"repository platform id"</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"repository platform name"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"path to repository platform data page"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"extra_build_lists"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id"</span><span class="p">,</span>
+        <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"build list status"</span><span class="p">,</span>
+        <span class="s2">"container_path"</span><span class="o">:</span> <span class="s2">"container path"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to build list page"</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"packages"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"package id"</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"package name"</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"package type (source/binary)"</span><span class="p">,</span>
+        <span class="s2">"epoch"</span><span class="o">:</span> <span class="s2">"package epoch"</span><span class="p">,</span>
+        <span class="s2">"version"</span><span class="o">:</span> <span class="s2">"package version"</span><span class="p">,</span>
+        <span class="s2">"release"</span><span class="o">:</span> <span class="s2">"package release"</span><span class="p">,</span>
+        <span class="s2">"updated_at"</span><span class="o">:</span> <span class="s2">"package last updated date"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"package url"</span><span class="p">,</span>
+        <span class="s2">"dependent_projects"</span><span class="o">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"project name"</span><span class="p">,</span>
+            <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"visibility (open/hidden)"</span><span class="p">,</span>
+            <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"project fullname"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to project data page"</span><span class="p">,</span>
+            <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"path to project git"</span><span class="p">,</span>
+            <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"path to project git over ssh"</span><span class="p">,</span>
+            <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+              <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user id"</span><span class="p">,</span>
+              <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"user uname"</span><span class="p">,</span>
+              <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"user name"</span><span class="p">,</span>
+              <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"api user path"</span><span class="p">,</span>
+              <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"user email"</span>
+            <span class="p">},</span>
+            <span class="s2">"dependent_packages"</span><span class="o">:</span> <span class="p">[</span>
+              <span class="s2">"package name"</span>
+            <span class="p">]</span>
+          <span class="p">}</span>
+        <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"logs"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"file_name"</span><span class="o">:</span> <span class="s2">"file name"</span><span class="p">,</span>
+        <span class="s2">"size"</span><span class="o">:</span> <span class="s2">"file size"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"file url"</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"url to build list page"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"status"</span><span class="o">:</span> <span class="mi">6000</span><span class="p">,</span>
+    <span class="s2">"container_path"</span><span class="o">:</span> <span class="s2">"/downloads/rosa2012/container/10"</span><span class="p">,</span>
+    <span class="s2">"container_status"</span><span class="o">:</span> <span class="mi">6000</span><span class="p">,</span>
+    <span class="s2">"new_core"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">"package_version"</span><span class="o">:</span> <span class="s2">"rosa2012.1-0.1.309-1"</span><span class="p">,</span>
+    <span class="s2">"project"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"evil_tools"</span><span class="p">,</span>
+      <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+      <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"abf/evil_tools"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/666.json"</span><span class="p">,</span>
+      <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"https:/ivan@abf.rosalinux.ru/jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+      <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"git@abf.rosalinux.ru:jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+      <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"ivan.aivazovsky@email.ru "</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"build_for_platform"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"rosa2012"</span><span class="p">,</span>
+      <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+      <span class="s2">"platform_type"</span><span class="o">:</span> <span class="s2">"main"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/platforms/1.json"</span>
+    <span class="p">},</span>
+    <span class="s2">"save_to_repository"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"mr_evil/personal"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/repositories/12.json"</span><span class="p">,</span>
+      <span class="s2">"platform"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"cocos_lts"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/platforms/2.json"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"arch"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"x84_64"</span>
+    <span class="p">},</span>
+    <span class="s2">"created_at"</span><span class="o">:</span> <span class="mi">1349357795</span><span class="p">,</span>
+    <span class="s2">"updated_at"</span><span class="o">:</span> <span class="mi">1349358084</span><span class="p">,</span>
+    <span class="s2">"update_type"</span><span class="o">:</span> <span class="s2">"bugfix"</span><span class="p">,</span>
+    <span class="s2">"auto_publish_status"</span><span class="o">:</span> <span class="s2">"default"</span><span class="p">,</span>
+    <span class="s2">"auto_create_container"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">"use_cached_chroot"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">"use_extra_tests"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">"save_buildroot"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"commit_hash"</span><span class="o">:</span> <span class="s2">"4edafbe69632173a1800c4d7582b60b46bc1fb55"</span><span class="p">,</span>
+    <span class="s2">"last_published_commit_hash"</span><span class="o">:</span> <span class="s2">"59f606578d21683bbbf4152bcdc2ebf1dd1e2e37"</span><span class="p">,</span>
+    <span class="s2">"priority"</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">"duration"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="s2">"advisory"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"at"</span><span class="p">,</span>
+      <span class="s2">"description"</span><span class="o">:</span> <span class="s2">"warpc/at"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/advisories/666.json"</span>
+    <span class="p">},</span>
+    <span class="s2">"mass_build"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"rosa2012lts (main)"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/mass_builds/666"</span>
+    <span class="p">},</span>
+    <span class="s2">"user"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">49</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Mr. Evil"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/49.json"</span>
+    <span class="p">},</span>
+    <span class="s2">"publisher"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span>
+      <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Mr. Good"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/50.json"</span>
+    <span class="p">},</span>
+    <span class="s2">"include_repos"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"main"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/repositories/16.json"</span><span class="p">,</span>
+        <span class="s2">"platform"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="mi">16</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"warpc_personal"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/platforms/16.json"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"extra_repositories"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"main"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/repositories/17.json"</span><span class="p">,</span>
+        <span class="s2">"platform"</span><span class="o">:</span> <span class="p">{</span>
+          <span class="s2">"id"</span><span class="o">:</span> <span class="mi">17</span><span class="p">,</span>
+          <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"avokhmin_personal"</span><span class="p">,</span>
+          <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/platforms/17.json"</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"extra_build_lists"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">12345</span><span class="p">,</span>
+        <span class="s2">"status"</span><span class="o">:</span> <span class="mi">6000</span><span class="p">,</span>
+        <span class="s2">"container_path"</span><span class="o">:</span> <span class="s2">"/downloads/warpc_personal/container/12345"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/build_lists/12345.json"</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"packages"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"alpine"</span><span class="p">,</span>
+        <span class="s2">"type"</span><span class="o">:</span> <span class="s2">"binary"</span><span class="p">,</span>
+        <span class="s2">"epoch"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"version"</span><span class="o">:</span> <span class="s2">"2.02"</span><span class="p">,</span>
+        <span class="s2">"release"</span><span class="o">:</span> <span class="s2">"1"</span><span class="p">,</span>
+        <span class="s2">"updated_at"</span><span class="o">:</span> <span class="mi">1348060890</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"http://file-store.rosalinux.ru/api/v1/file_stores/675bfe070075abd5b7b49ecf213e830ff2f56ae3"</span><span class="p">,</span>
+        <span class="s2">"dependent_projects"</span><span class="o">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="s2">"id"</span><span class="o">:</span> <span class="mi">666</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"evil_tools"</span><span class="p">,</span>
+            <span class="s2">"visibility"</span><span class="o">:</span> <span class="s2">"open"</span><span class="p">,</span>
+            <span class="s2">"fullname"</span><span class="o">:</span> <span class="s2">"abf/evil_tools"</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/projects/666.json"</span><span class="p">,</span>
+            <span class="s2">"git_url"</span><span class="o">:</span> <span class="s2">"https:/ivan@abf.rosalinux.ru/jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+            <span class="s2">"ssh_url"</span><span class="o">:</span> <span class="s2">"git@abf.rosalinux.ru:jaroslav_garkin/hwinfo.git"</span><span class="p">,</span>
+            <span class="s2">"maintainer"</span><span class="o">:</span> <span class="p">{</span>
+              <span class="s2">"id"</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+              <span class="s2">"name"</span><span class="o">:</span> <span class="s2">"Ivan Aivazovsky"</span><span class="p">,</span>
+              <span class="s2">"uname"</span><span class="o">:</span> <span class="s2">"ivan_aivazovsky"</span><span class="p">,</span>
+              <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/users/1.json"</span><span class="p">,</span>
+              <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"ivan.aivazovsky@email.ru "</span>
+            <span class="p">},</span>
+            <span class="s2">"dependent_packages"</span><span class="o">:</span> <span class="p">[</span>
+              <span class="s2">"rpmdrake"</span>
+            <span class="p">]</span>
+          <span class="p">}</span>
+        <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"logs"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"file_name"</span><span class="o">:</span> <span class="s2">"abfworker::rpm-worker-859694.log"</span><span class="p">,</span>
+        <span class="s2">"size"</span><span class="o">:</span> <span class="s2">"20014310"</span><span class="p">,</span>
+        <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"http://file-store.rosalinux.ru/api/v1/file_stores/3a93e5553490e39b4cd50269d51ad8438b7e20b8"</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/build_lists/10.json"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="create-build-list">Create build list</h2>
+
+<p>Create new build list for project.</p>
+
+<pre><code>POST /api/v1/build_lists.json
+</code></pre>
+
+<h3 id="input">Input:</h3>
+
+<dl>
+  <dt>project_id</dt>
+  <dd>
+<em>Required</em> <strong>integer</strong> — Identifier project for which need to run assembly.</dd>
+  <dt>commit_hash</dt>
+  <dd>
+<em>Required</em> <strong>string</strong> — SHA of project commit for which need to run assembly.</dd>
+  <dt>update_type</dt>
+  <dd>
+<em>Required</em> <strong>string</strong> — Informing customers about the priority and character of updates: <code>security</code>, <code>bugfix</code>, <code>enhancement</code>,<code>recommended</code> or <code>newpackage</code>.</dd>
+  <dt>save_to_repository_id</dt>
+  <dd>
+<em>Required</em> <strong>integer</strong> — Repository identifier for package storage. List of repositories can be find in api call:
+<a href="/abf/api/v1/projects/#get-a-single-project">see repositories section</a>.</dd>
+  <dt>build_for_platform_id</dt>
+  <dd>
+<em>Required</em> <strong>integer</strong> — Identifier of platform for which need to run assembly. List of platforms can be find in api call:
+<a href="/abf/api/v1/platforms/#list-of-platforms-for-which-you-can-create-build-list">list of platforms</a>.</dd>
+  <dt>include_repos</dt>
+  <dd>
+<em>Required</em> <strong>array</strong> of <strong>integers</strong> — Repositories to connect for building this build list. Repositories must belong to platform(build_for_platform_id) for which performed assembly. Use <code>extra_repositories</code> for connect repositories from personal platforms.</dd>
+  <dt>arch_id</dt>
+  <dd>
+<em>Required</em> <strong>integer</strong> — Identifier architecture for which need to run assembly.</dd>
+  <dt>auto_publish_status</dt>
+  <dd>
+<em>Optional</em> <strong>string</strong> — <code>default</code> to enable automatic publication build list if the build succeeds, <code>testing</code> to enable automatic publication build list into <code>testing</code> sub-repository if the build succeeds, <code>none</code> allow manually publication. If in repository for package storage disabled publication without QA, parameter auto_publish_status automatically will be set to <code>none</code>.</dd>
+  <dt>auto_create_container</dt>
+  <dd>
+<em>Optional</em> <strong>boolean</strong> — <code>true</code> to enable automatic creating container of build list if the build succeeds, <code>false</code> allow manually creating. Default value: <code>false</code>.</dd>
+  <dt>extra_repositories</dt>
+  <dd>
+<em>Optional</em> <strong>array</strong> of <strong>integers</strong> — Repositories to connect for building this build list. Available only if <code>save_to_repository</code> - personal repository.</dd>
+  <dt>extra_build_lists</dt>
+  <dd>
+<em>Optional</em> <strong>array</strong> of <strong>integers</strong> — Build lists with containers (<code>container_status</code> should be <code>6000</code>) to connect for building this build list.<br>
+For main platform you can connect only build lists which have been saved into same platform. <br>
+Only build lists with the same architecture will be connected or oriented to the both architectures (the property <code>publish_i686_into_x86_64</code> (only for <code>rhel</code>) in the settings of project is <code>true</code>).</dd>
+  <dt>use_cached_chroot</dt>
+  <dd>
+<em>Optional</em> <strong>boolean</strong> — <code>true</code> to use a cached chroot for building of build list. Default value: <code>false</code>.</dd>
+  <dt>use_extra_tests</dt>
+  <dd>
+<em>Optional</em> <strong>boolean</strong> — <code>true</code> to use a more complex testing of packages. Default value: <code>true</code>.</dd>
+  <dt>save_buildroot</dt>
+  <dd>
+<em>Optional</em> <strong>boolean</strong> — <code>true</code> to save a RPM buildroot if build will fail. Default value: <code>false</code>.</dd>
+  <dt>include_testing_subrepository</dt>
+  <dd>
+<em>Optional</em> <strong>boolean</strong> — <code>true</code> to connect <code>testing</code> subrepository for building this build list. Default value: <code>false</code>.</dd>
+  <dt>external_nodes</dt>
+  <dd>
+<em>Optional</em> <strong>string</strong> — <code>owned</code> to use own external ABF node, <code>everything</code> to use any external ABF node.</dd>
+</dl>
+
+<h3 id="request">Request</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"project_id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+    <span class="s2">"commit_hash"</span><span class="o">:</span> <span class="s2">"commit hash to build"</span><span class="p">,</span>
+    <span class="s2">"update_type"</span><span class="o">:</span> <span class="s2">"one of the update types"</span><span class="p">,</span>
+    <span class="s2">"save_to_repository_id"</span><span class="o">:</span> <span class="s2">"repository identifier for package storage"</span><span class="p">,</span>
+    <span class="s2">"build_for_platform_id"</span><span class="o">:</span> <span class="s2">"platform identifier of platform for build"</span><span class="p">,</span>
+    <span class="s2">"auto_publish_status"</span><span class="o">:</span> <span class="s2">"automated publising status"</span><span class="p">,</span>
+    <span class="s2">"auto_create_container"</span><span class="o">:</span> <span class="s2">"automated creation of container"</span><span class="p">,</span>
+    <span class="s2">"use_cached_chroot"</span><span class="o">:</span> <span class="s2">"use cached chroot"</span><span class="p">,</span>
+    <span class="s2">"use_extra_tests"</span><span class="o">:</span> <span class="s2">"use extra tests"</span><span class="p">,</span>
+    <span class="s2">"save_buildroot"</span><span class="o">:</span> <span class="s2">"save RPM buildroot"</span><span class="p">,</span>
+    <span class="s2">"external_nodes"</span><span class="o">:</span> <span class="s2">"external nodes"</span><span class="p">,</span>
+    <span class="s2">"include_testing_subrepository"</span><span class="o">:</span> <span class="s2">"include 'testing' subrepository"</span><span class="p">,</span>
+    <span class="s2">"include_repos"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="s2">"included repository id for each selected platform"</span>
+    <span class="p">],</span>
+    <span class="s2">"extra_repositories"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="s2">"extra repository id for each selected platform"</span>
+    <span class="p">],</span>
+    <span class="s2">"extra_build_lists"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="s2">"extra build list id with container for each selected platform"</span>
+    <span class="p">],</span>
+    <span class="s2">"arch_id"</span><span class="o">:</span> <span class="s2">"architecture identifier"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="request-example">Request example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"project_id"</span><span class="o">:</span> <span class="s2">"10"</span><span class="p">,</span>
+    <span class="s2">"commit_hash"</span><span class="o">:</span> <span class="s2">"751b0cad9cd1467e735d8c3334ea3cf988995fab"</span><span class="p">,</span>
+    <span class="s2">"update_type"</span><span class="o">:</span> <span class="s2">"bugfix"</span><span class="p">,</span>
+    <span class="s2">"save_to_repository_id"</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">"build_for_platform_id"</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"auto_publish_status"</span><span class="o">:</span> <span class="s2">"default"</span><span class="p">,</span>
+    <span class="s2">"auto_create_container"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">"use_cached_chroot"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">"use_extra_tests"</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">"save_buildroot"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"external_nodes"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="s2">"include_testing_subrepository"</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="s2">"include_repos"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="mi">54</span><span class="p">,</span>
+      <span class="mi">53</span>
+    <span class="p">],</span>
+    <span class="s2">"extra_repositories"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="mi">56</span><span class="p">,</span>
+      <span class="mi">55</span>
+    <span class="p">],</span>
+    <span class="s2">"extra_build_lists"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="mi">12345</span><span class="p">,</span>
+      <span class="mi">12346</span>
+    <span class="p">],</span>
+    <span class="s2">"arch_id"</span><span class="o">:</span> <span class="mi">1</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="response-1">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="response-example">Response example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="mi">56</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Build list for project version 'beta_2012', platform 'rosa2012' and architecture 'i586' has been created successfully"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="cancel-build-list">Cancel build list</h2>
+
+<p>By this request you can cancel build list.
+Only build list with status build pending (2000) or build started (3000) can be canceled.</p>
+
+<pre><code>PUT /api/v1/build_lists/:id/cancel.json
+</code></pre>
+
+<h3 id="parameters-1">Parameters:</h3>
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Integer</em> identifier of current build list</dd>
+</dl>
+
+<h3 id="response-2">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-1">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Build canceled"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<p> </p>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Errors during build cancelation!"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="publish-build-list">Publish build list</h2>
+
+<p>By this request you can publish build list.
+Only build list with status:</p>
+
+<ul>
+  <li>build complete (0),</li>
+  <li>publishing error (8000),</li>
+  <li>tests failed (11000),</li>
+  <li>build has been published into testing (12000),</li>
+  <li>publishing error into testing (14000)</li>
+</ul>
+
+<p>can be published.<br>
+Admin of platform/repository has access to publish build list again with status published (6000).<br>
+Be careful: secondary publication will be able to break relationships in the repository!<br>
+All extra build lists should be published before publishing this build list!</p>
+
+<pre><code>PUT /api/v1/build_lists/:id/publish.json
+</code></pre>
+
+<h3 id="parameters-2">Parameters:</h3>
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Integer</em> identifier of current build list</dd>
+</dl>
+
+<h3 id="response-3">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-2">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Build is queued for publishing"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<p> </p>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Errors during build publishing!"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="publish-build-list-into-testing">Publish build list into testing</h2>
+
+<p>By this request you can publish build list into <code>testing</code> subrepository.
+Only build list with status:</p>
+
+<ul>
+  <li>build complete (0),</li>
+  <li>publishing error (8000),</li>
+  <li>tests failed (11000),</li>
+  <li>build has been published into testing (12000),</li>
+  <li>publishing error into testing (14000)</li>
+</ul>
+
+<p>can be published.<br></p>
+
+<pre><code>PUT /api/v1/build_lists/:id/publish_into_testing.json
+</code></pre>
+
+<h3 id="parameters-3">Parameters:</h3>
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Integer</em> identifier of current build list</dd>
+</dl>
+
+<h3 id="response-4">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-3">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Build is queued for publishing"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<p> </p>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Errors during build publishing!"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="rerun-tests">Rerun tests</h2>
+
+<p>By this request you can rerun tests.
+Tests can be rerun only for build list with statuses build complete (0), tests failed (11000).</p>
+
+<pre><code>PUT /api/v1/build_lists/:id/rerun_tests.json
+</code></pre>
+
+<h3 id="parameters-4">Parameters:</h3>
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Integer</em> identifier of current build list</dd>
+</dl>
+
+<h3 id="response-5">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-4">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Build is queued for rerun tests"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<p> </p>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Errors during rerun tests!"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="create-container">Create container</h2>
+
+<p>By this request you can create container.
+Container can be created only for build list with statuses build complete (0), build published (6000), build publish (7000), publishing error (8000), publishing rejected (9000), tests failed (11000).</p>
+
+<pre><code>PUT /api/v1/build_lists/:id/create_container.json
+</code></pre>
+
+<h3 id="parameters-5">Parameters:</h3>
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Integer</em> identifier of current build list</dd>
+</dl>
+
+<h3 id="response-6">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-5">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Container is queued for creating"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<p> </p>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Errors during container creating!"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="reject-publish-build-list">Reject publish build list</h2>
+
+<p>By this request you can reject publish build list.
+Only build list with status:</p>
+
+<ul>
+  <li>build complete (0),</li>
+  <li>publishing error (8000),</li>
+  <li>tests failed (11000),</li>
+  <li>build has been published into testing (12000),</li>
+  <li>publishing error into testing (14000)</li>
+</ul>
+
+<p>can be rejected.</p>
+
+<pre><code>PUT /api/v1/build_lists/:id/reject_publish.json
+</code></pre>
+
+<h3 id="parameters-6">Parameters:</h3>
+<dl>
+  <dt>id</dt>
+  <dd>
+<em>Integer</em> identifier of current build list</dd>
+</dl>
+
+<h3 id="response-7">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id (null if failed)"</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"success or fail message"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-6">Example:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Build is rejected"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<p> </p>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_list"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Errors during build rejecting!"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="list-build-lists">List build lists</h2>
+
+<p>By this way you can search build list you need.</p>
+
+<pre><code>GET /api/v1/build_lists.json?&lt;search params&gt;
+</code></pre>
+
+<h3 id="parameters-7">Parameters:</h3>
+
+<dl>
+  <dt>page</dt>
+  <dd>
+<em>Optional</em> <strong>Integer</strong> - page number of build lists results list.</dd>
+  <dt>per_page</dt>
+  <dd>
+<em>Optional</em> <strong>Integer</strong> - amount of build list per one page. Default 20, maximum 100.</dd>
+  <dt>filter[status]</dt>
+  <dd>
+<em>Optional</em> <strong>integer</strong> - code of the build status</dd>
+  <dd>
+    <ul>
+      <li>
+<code>0</code>     — build complete;</li>
+      <li>
+<code>1</code>     — platform not found;</li>
+      <li>
+<code>2</code>     — platform pending;</li>
+      <li>
+<code>3</code>     — project not found;</li>
+      <li>
+<code>4</code>     — project version not found;</li>
+      <li>
+<code>666</code>   — build error;</li>
+      <li>
+<code>2000</code>  — build pending;</li>
+      <li>
+<code>2500</code>  — rerun tests;</li>
+      <li>
+<code>2550</code>  — build is being rerun tests;</li>
+      <li>
+<code>3000</code>  — build started;</li>
+      <li>
+<code>4000</code>  — waiting for response;</li>
+      <li>
+<code>5000</code>  — build canceled;</li>
+      <li>
+<code>6000</code>  — build has been published;</li>
+      <li>
+<code>7000</code>  — build is being published;</li>
+      <li>
+<code>8000</code>  — publishing error;</li>
+      <li>
+<code>9000</code>  — publishing rejected;</li>
+      <li>
+<code>10000</code> — build is canceling;</li>
+      <li>
+<code>11000</code> — tests failed;</li>
+      <li>
+<code>12000</code> — build has been published into testing;</li>
+      <li>
+<code>13000</code> — build is being published into testing;</li>
+      <li>
+<code>14000</code> — publishing error into testing.</li>
+    </ul>
+  </dd>
+  <dt>filter[arch_id]</dt>
+  <dd>
+<em>Optional</em> <strong>integer</strong> - identifier of the architecture.</dd>
+  <dt>filter[project_name]</dt>
+  <dd>
+<em>Optional</em> <strong>string</strong> — project name.</dd>
+  <dt>filter[updated_at_start / updated_at_end]</dt>
+  <dd>
+<em>Optional</em> <strong>unixtime</strong> - start and end of the build list last change date diapason.</dd>
+  <dt>filter[ownership]</dt>
+  <dd>
+<em>Optional</em> <code>owned</code>, <code>related</code> or <code>index</code> - ownership type. Default: <code>owned</code>.</dd>
+  <dt>filter[mass_build_id]</dt>
+  <dd>
+<em>Optional</em> <strong>integer</strong> — mass build identifier.</dd>
+  <dt>filter[save_to_platform_id]</dt>
+  <dd>
+<em>Optional</em> <strong>integer</strong> - platform id for build save.</dd>
+  <dt>filter[build_for_platform_id]</dt>
+  <dd>
+<em>Optional</em> <strong>integer</strong> - platform id for build.</dd>
+  <dt>filter[save_to_repository_id]</dt>
+  <dd>
+<em>Optional</em> <strong>integer</strong> - repository id for package storage.</dd>
+</dl>
+
+<h3 id="response-8">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_lists"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id"</span><span class="p">,</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"build list status"</span><span class="p">,</span>
+      <span class="s2">"project_id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"build list page"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"current url for build lists page"</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-of-request-url">Example of request url:</h3>
+
+<blockquote>
+  <p>/api/v1/build_lists.json?filter[project_name]=rails</p>
+</blockquote>
+
+<blockquote>
+  <p>/api/v1/build_lists.json?filter[ownership]=owned&amp;filter[status]=6000&amp;filter[arch_id]=2</p>
+</blockquote>
+
+<h3 id="examples-of-responses">Examples of responses:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_lists"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="mi">6000</span><span class="p">,</span>
+      <span class="s2">"project_id"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/build_lists/25.json"</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">26</span><span class="p">,</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="mi">6000</span><span class="p">,</span>
+      <span class="s2">"project_id"</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/build_lists/26.json"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/build_lists.json"</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="list-build-lists-for-a-project">List build lists for a project</h2>
+
+<pre><code>GET /api/v1/projects/:project_id/build_lists.json?&lt;search params&gt;
+</code></pre>
+
+<h3 id="parameters-8">Parameters:</h3>
+
+<p>Look at <a href="#list-build-lists">List build lists</a></p>
+
+<h3 id="response-9">Response:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_lists"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"build list id"</span><span class="p">,</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="s2">"build list status"</span><span class="p">,</span>
+      <span class="s2">"project_id"</span><span class="o">:</span> <span class="s2">"project id"</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"build list page"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"current url for build lists page"</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="example-of-request-url-1">Example of request url:</h3>
+
+<blockquote>
+  <p>/api/v1/projects/42/build_lists.json?filter[status]=6000</p>
+</blockquote>
+
+<h3 id="examples-of-responses-1">Examples of responses:</h3>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"build_lists"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="mi">6000</span><span class="p">,</span>
+      <span class="s2">"project_id"</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/build_lists/25.json"</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="mi">26</span><span class="p">,</span>
+      <span class="s2">"status"</span><span class="o">:</span> <span class="mi">6000</span><span class="p">,</span>
+      <span class="s2">"project_id"</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+      <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/build_lists/26.json"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"/api/v1/build_lists.json"</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="destroy-build-list">Destroy build list</h2>
+
+<p>You can’t destroy build list. Only cancel it. :)</p>
+
+      </div>
+
+    <div id="js-sidebar" class="sidebar-shell">
+      <div class="js-toggle-list sidebar-module expandable">
+        <ul>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/abf/">ABF</a></h3>
+            <ul class="js-guides">
+              <li><a href="/abf/api/">API</a></li>
+              <li class='submenu'><a href="/abf/api/v1/advisories/">Advisories</a></li>
+              <li class='submenu'><a href="/abf/api/v1/architectures/">Architectures</a></li>
+              <li class='submenu'><a href="/abf/api/v1/build_lists/">Build lists</a></li>
+              <li class='submenu'><a href="/abf/api/v1/groups/">Groups</a></li>
+              <li class='submenu'><a href="/abf/api/v1/issues/">Issues</a></li>
+              <li class='submenu'><a href="/abf/api/v1/maintainers/">Maintainers</a></li>
+              <li class='submenu'><a href="/abf/api/v1/platforms/">Platforms</a></li>
+              <li class='submenu'><a href="/abf/api/v1/products/">Products</a></li>
+              <li class='submenu'><a href="/abf/api/v1/product_build_lists/">Product Build Lists</a></li>
+              <li class='submenu'><a href="/abf/api/v1/projects/">Projects</a></li>
+              <li class='submenu'><a href="/abf/api/v1/pull_requests/">Pull Requests</a></li>
+              <li class='submenu'><a href="/abf/api/v1/repositories/">Repositories</a></li>
+              <li class='submenu'><a href="/abf/api/v1/search/">Search</a></li>
+              <li class='submenu'><a href="/abf/api/v1/users/">Users</a></li>
+
+              <li><a href="/abf/file_store_integration/">Integration with FileStore (.abf.yml)</a></li>
+              <li><a href="/abf/iso_build/">ISO build environment</a></li>
+
+              <li><a href="/abf/scripts/">Package build environment</a></li>
+              <li class='submenu'><a href="/abf/scripts/assembly_of_packages/">Assembly of packages</a></li>
+              <li class='submenu'><a href="/abf/scripts/publication_of_packages/">Publication of packages</a></li>
+
+              <li><a href="/abf/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/abf/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf/deployment/rels_centos/">RELS/CentOS</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf/deployment/ubuntu/">Ubuntu</a>
+              </li>
+            </ul>
+          </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/file_store/">File Store</a></h3>
+            <ul class="js-guides">
+              <li><a href="/file_store/api/">API</a></li>
+              <li class='submenu'><a href="/file_store/api/v1/files/">Files</a></li>
+
+              <li><a href="/file_store/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/file_store/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/file_store/deployment/manual/">Manual</a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/abf_worker/">ABF-Worker</a></h3>
+            <ul class="js-guides">
+              <li><a href="/abf_worker/build_boxes/">Build boxes</a></li>
+              <li><a href="/abf_worker/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/abf_worker/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf_worker/deployment/manual/">Manual</a>
+              </li>
+            </ul>
+          </li>
+
+        </ul>
+      </div> <!-- /sidebar-module -->
+      <div class="sidebar-module">
+        <p>
+          These websites are <a href="https://abf.rosalinux.ru" target="_blank">ABF</a>
+          and <a href="https://file-store.rosalinux.ru" target="_blank">File Store</a>
+        </p>
+      </div>
+    </div><!-- /sidebar-shell -->
+
+    </div><!-- #wrapper -->
+
+    <div id="footer" >
+      <div class="upper_footer">
+        <div class="footer_inner clearfix">
+          <h4 id="blacktocat">ABF Links</h4>
+        <ul class="footer_nav">
+          <h4>RosaLab</h4>
+		  <li><a href="http://www.rosalab.com/about">About</a></li>
+		  <li><a href="https://abf.rosalinux.ru/contact">Contact &amp; Support</a></li>
+        </ul>
+
+        <ul class="footer_nav">
+        </ul>
+
+        <ul class="footer_nav">
+        </ul>
+
+        <ul class="footer_nav">
+          <h4>Documentation</h4>
+		  <li><a href="http://wiki.rosalab.ru/en/index.php/ABF_Getting_Started">ABF Help</a></li>
+		  <li><a href="http://abf-doc.rosalinux.ru/">Developer API</a></li>
+        </ul>
+
+        </div><!-- /.site -->
+      </div><!-- /.upper_footer -->
+
+      <div class="lower_footer">
+        <div class="footer_inner clearfix">
+            <div id="legal">
+
+              <a class="home" href="http://abf.rosalinux.ru">Home</a>
+
+              <ul id="legal_links">
+              </ul>
+
+              <p>&copy; <span id="year">year</span> RosaLab. All rights reserved.</p>
+            </div><!-- /#legal or /#legal_ie-->
+        </div><!-- /.site -->
+      </div><!-- /.lower_footer -->
+    </div><!-- /#footer -->
+</body>
+</html>

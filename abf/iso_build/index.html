@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en2">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Language" content="en-us" />
+  <meta http-equiv="imagetoolbar" content="false" />
+  <meta name="MSSmartTagsPreventParsing" content="true" />
+  <title>ISO build environment | ABF Documentation</title>
+  <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+  <link href="/css/960.css" rel="stylesheet" type="text/css" />
+  <link href="/css/uv_active4d.css" rel="stylesheet" type="text/css" />
+  <link href="/shared/css/documentation.css" media="screen" rel="stylesheet" type="text/css">
+  <link href="/shared/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="/shared/js/jquery.js" type="text/javascript"></script>
+  <script src="/shared/js/documentation.js" type="text/javascript"></script>
+</head>
+<body class="api">
+    <div id="header-wrapper">
+      <div id="header">
+        <div>
+          <a class="logo" href="/"><img src="/images/logo_developer.png" width="255" height="45" /></a>
+          <ul class="nav">
+            <li><a href="https://abf.rosalinux.ru/contact">Support</a></li>
+          </ul>
+        </div>
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+
+    <div id="wrapper">
+      <div class="content">
+    <h1 id="iso-build-environment">ISO build environment</h1>
+
+<ul>
+  <li><a href="#prerequisites-and-restrictions">Prerequisites and restrictions</a></li>
+  <li><a href="#building-the-product-and-creating-the-iso-disk-image">Building the product and creating the ISO disk image</a></li>
+  <li><a href="#the-virtual-machine-and-the-build-process-details">The Virtual Machine and the build process details</a></li>
+</ul>
+
+<h2 id="prerequisites-and-restrictions">Prerequisites and restrictions</h2>
+
+<ul>
+  <li>The product can be built for the main platform only;</li>
+  <li>The user must have all necessary permissions to build the product.</li>
+</ul>
+
+<h2 id="building-the-product-and-creating-the-iso-disk-image">Building the product and creating the ISO disk image</h2>
+
+<p>1. Navigate to the platform menu, select the <code>Products</code> menu entry and press the <code>New product</code>button:</p>
+
+<p><img src="/images/products.png" alt="Show products"></p>
+
+<p>Enter the following information into the form:</p>
+
+<ul>
+  <li>product name;</li>
+  <li>product description;</li>
+  <li>project containing the build scripts;</li>
+  <li>entry point i.e. the bash script used to build the main product;</li>
+  <li>the bash script arguments needed to build the product;</li>
+  <li>the maximum amount of time needed to build the product.</li>
+</ul>
+
+<p>2. The above parameters will be used as the default parameters for building the product <code>ProductBuildList</code>.</p>
+
+<p><img src="/images/product_new.png" alt="New product"></p>
+
+<p>Press the <code>Save</code> button.</p>
+
+<p>3. After the default setting are saved you’ll be transferred to the product page where you can create the <code>ProductBuildList</code> or ISO image</p>
+
+<p><img src="/images/product_show.png" alt="Show product"></p>
+
+<p>4. Press the <code>Build</code> button to open the form for the product build task or the ISO image creating task</p>
+
+<p><img src="/images/product_build_list_new.png" alt="Show product"></p>
+
+<p>Enter the following information into the form:</p>
+
+<ul>
+  <li>your build script project branch;</li>
+  <li>the main file containing bash script used to build the product;</li>
+  <li>the script arguments;</li>
+  <li>maximum amount of time needed to build the product.</li>
+</ul>
+
+<h2 id="the-virtual-machine-and-the-build-process-details">The Virtual Machine and the build process details</h2>
+
+<p>1. You will operate under <code>vagrant</code> user account</p>
+
+<p>2. The following working directories will be created by default:</p>
+
+<ul>
+  <li>
+<code>/home/vagrant/results</code> after finishing the build process all files from this directory are saved on a <a href="http://file-store.rosalinux.ru/">File-Store</a>, and the downloading links
+will be available on a build review page at the <code>Results</code> ABF section (recommended place for storing the build logs and ISO disk images);</li>
+  <li>
+<code>/home/vagrant/archives</code> after the build process is finished, this directory will be archived into the <code>/home/vagrant/results</code> directory (recommended place for storing secondary information which will be available in the form of single archive file after the build);</li>
+  <li>
+<code>/home/vagrant/iso_builder</code> this is tmpfs directory with the size of <code>30.000MB</code> where all your project files will be stored. It is strictly recommended to use this directory in your build script (for creating temporary files etc).</li>
+</ul>
+
+<h3 id="note">NOTE:</h3>
+
+<ul>
+  <li>any data created outside the <code>/home/vagrant/results</code> and <code>/home/vagrant/archives</code> won’t be available after the build process is finished;</li>
+  <li>the amount of free disk space of the virtual machine is around <code>9GB</code> so please consider it while saving the results.</li>
+</ul>
+
+<p>3. The virtual machine has a minimal set of system packages installed, so you’ll have to install all additional programs needed for your build process. Remember that the architecture is <code>x86_64</code>.</p>
+
+<p>4. Your script will be run (with the arguments specified) under user <code>vagrant</code> from directory <code>/home/vagrant/iso_builder</code>. For example:</p>
+
+<pre><code>cd iso_builder/; &lt;Params for running script&gt; /bin/bash &lt;Main script&gt;
+</code></pre>
+
+<h3 id="note-1">NOTE:</h3>
+
+<ul>
+  <li>your script may contain root commands (sudo <command name=""></command>);</li>
+  <li>the directory <code>iso_builder</code> will contain the build project version specified during the build setup. It means that only the specified version will be downloaded into the directory and NOT the whole project. (The <code>.git</code> directory won’t be available and you won’t be able to switch to another branch of the project in your script).</li>
+</ul>
+
+<p>5. Every build is performed within it’s own virtual machine. After the build is done the machine will be reset to its defaults.</p>
+
+<p>6. In case if the maximum amount of build time (<code>Max time for building (in minutes)</code>) is exceeded, the build will be canceled and the virtual machine rollback will be performed. No VM data will be saved and “Product build list” will receive exit status of <code>Build canceled</code>.</p>
+
+<p>7. The VM is connected to the Internet so you can download/upload any additional data and the final results from within your script (in case you do not want to use the default settings for those operations).</p>
+
+<p>8. The zero build process exit code means success, any other exit code will be interpreted as a build error.</p>
+
+<p>9. The table shows how the build result depends on build status</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left"><strong>Condition</strong></th>
+      <th style="text-align: center"><strong>Results are saved</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">The build script returned any exit code (0,1, …)</td>
+      <td style="text-align: center">+</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">The build was canceled by user</td>
+      <td style="text-align: center">-</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">The build was canceled by system (max build time exceeded)</td>
+      <td style="text-align: center">-</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+
+    <div id="js-sidebar" class="sidebar-shell">
+      <div class="js-toggle-list sidebar-module expandable">
+        <ul>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/abf/">ABF</a></h3>
+            <ul class="js-guides">
+              <li><a href="/abf/api/">API</a></li>
+              <li class='submenu'><a href="/abf/api/v1/advisories/">Advisories</a></li>
+              <li class='submenu'><a href="/abf/api/v1/architectures/">Architectures</a></li>
+              <li class='submenu'><a href="/abf/api/v1/build_lists/">Build lists</a></li>
+              <li class='submenu'><a href="/abf/api/v1/groups/">Groups</a></li>
+              <li class='submenu'><a href="/abf/api/v1/issues/">Issues</a></li>
+              <li class='submenu'><a href="/abf/api/v1/maintainers/">Maintainers</a></li>
+              <li class='submenu'><a href="/abf/api/v1/platforms/">Platforms</a></li>
+              <li class='submenu'><a href="/abf/api/v1/products/">Products</a></li>
+              <li class='submenu'><a href="/abf/api/v1/product_build_lists/">Product Build Lists</a></li>
+              <li class='submenu'><a href="/abf/api/v1/projects/">Projects</a></li>
+              <li class='submenu'><a href="/abf/api/v1/pull_requests/">Pull Requests</a></li>
+              <li class='submenu'><a href="/abf/api/v1/repositories/">Repositories</a></li>
+              <li class='submenu'><a href="/abf/api/v1/search/">Search</a></li>
+              <li class='submenu'><a href="/abf/api/v1/users/">Users</a></li>
+
+              <li><a href="/abf/file_store_integration/">Integration with FileStore (.abf.yml)</a></li>
+              <li><a href="/abf/iso_build/">ISO build environment</a></li>
+
+              <li><a href="/abf/scripts/">Package build environment</a></li>
+              <li class='submenu'><a href="/abf/scripts/assembly_of_packages/">Assembly of packages</a></li>
+              <li class='submenu'><a href="/abf/scripts/publication_of_packages/">Publication of packages</a></li>
+
+              <li><a href="/abf/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/abf/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf/deployment/rels_centos/">RELS/CentOS</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf/deployment/ubuntu/">Ubuntu</a>
+              </li>
+            </ul>
+          </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/file_store/">File Store</a></h3>
+            <ul class="js-guides">
+              <li><a href="/file_store/api/">API</a></li>
+              <li class='submenu'><a href="/file_store/api/v1/files/">Files</a></li>
+
+              <li><a href="/file_store/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/file_store/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/file_store/deployment/manual/">Manual</a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/abf_worker/">ABF-Worker</a></h3>
+            <ul class="js-guides">
+              <li><a href="/abf_worker/build_boxes/">Build boxes</a></li>
+              <li><a href="/abf_worker/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/abf_worker/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf_worker/deployment/manual/">Manual</a>
+              </li>
+            </ul>
+          </li>
+
+        </ul>
+      </div> <!-- /sidebar-module -->
+      <div class="sidebar-module">
+        <p>
+          These websites are <a href="https://abf.rosalinux.ru" target="_blank">ABF</a>
+          and <a href="https://file-store.rosalinux.ru" target="_blank">File Store</a>
+        </p>
+      </div>
+    </div><!-- /sidebar-shell -->
+
+    </div><!-- #wrapper -->
+
+    <div id="footer" >
+      <div class="upper_footer">
+        <div class="footer_inner clearfix">
+          <h4 id="blacktocat">ABF Links</h4>
+        <ul class="footer_nav">
+          <h4>RosaLab</h4>
+		  <li><a href="http://www.rosalab.com/about">About</a></li>
+		  <li><a href="https://abf.rosalinux.ru/contact">Contact &amp; Support</a></li>
+        </ul>
+
+        <ul class="footer_nav">
+        </ul>
+
+        <ul class="footer_nav">
+        </ul>
+
+        <ul class="footer_nav">
+          <h4>Documentation</h4>
+		  <li><a href="http://wiki.rosalab.ru/en/index.php/ABF_Getting_Started">ABF Help</a></li>
+		  <li><a href="http://abf-doc.rosalinux.ru/">Developer API</a></li>
+        </ul>
+
+        </div><!-- /.site -->
+      </div><!-- /.upper_footer -->
+
+      <div class="lower_footer">
+        <div class="footer_inner clearfix">
+            <div id="legal">
+
+              <a class="home" href="http://abf.rosalinux.ru">Home</a>
+
+              <ul id="legal_links">
+              </ul>
+
+              <p>&copy; <span id="year">year</span> RosaLab. All rights reserved.</p>
+            </div><!-- /#legal or /#legal_ie-->
+        </div><!-- /.site -->
+      </div><!-- /.lower_footer -->
+    </div><!-- /#footer -->
+</body>
+</html>

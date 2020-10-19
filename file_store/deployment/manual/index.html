@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en2">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Language" content="en-us" />
+  <meta http-equiv="imagetoolbar" content="false" />
+  <meta name="MSSmartTagsPreventParsing" content="true" />
+  <title>File Store Deployment | File Store Documentation</title>
+  <link href="/css/reset.css" rel="stylesheet" type="text/css" />
+  <link href="/css/960.css" rel="stylesheet" type="text/css" />
+  <link href="/css/uv_active4d.css" rel="stylesheet" type="text/css" />
+  <link href="/shared/css/documentation.css" media="screen" rel="stylesheet" type="text/css">
+  <link href="/shared/css/pygments.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="/shared/js/jquery.js" type="text/javascript"></script>
+  <script src="/shared/js/documentation.js" type="text/javascript"></script>
+</head>
+<body class="api">
+    <div id="header-wrapper">
+      <div id="header">
+        <div>
+          <a class="logo" href="/"><img src="/images/logo_developer.png" width="255" height="45" /></a>
+          <ul class="nav">
+            <li><a href="https://abf.rosalinux.ru/contact">Support</a></li>
+          </ul>
+        </div>
+      </div><!-- #header -->
+    </div><!-- #header-wrapper -->
+
+    <div id="wrapper">
+      <div class="content">
+    <h1 id="file-store-deployment-documentation">File Store Deployment Documentation</h1>
+
+<ul>
+  <li><a href="#prepare-environment">Prepare environment</a></li>
+  <li><a href="#prepare-server-to-deployment">Prepare server to deployment</a></li>
+  <li><a href="#startup-file-store">Startup File Store</a></li>
+</ul>
+
+<h2 id="prepare-environment">Prepare environment</h2>
+
+<h3 id="first-of-all-we-should-add-new-user">First of all we should add new user.</h3>
+
+<p>Add new user <code>rosa</code>:</p>
+
+<pre><code>sudo useradd rosa
+</code></pre>
+
+<h3 id="install-nesessary-packages">Install nesessary packages</h3>
+
+<pre><code>git-core libicu-devel gcc ruby-devel libxml2 libxml2-devel libxslt libxslt-devel postgresql-devel python-devel
+</code></pre>
+
+<h3 id="install-rvm-for-rosa-user">Install RVM (for <code>rosa</code> user):</h3>
+
+<p>To install RVM type in this command:</p>
+
+<pre><code>curl -L get.rvm.io | bash -s stable
+</code></pre>
+
+<p>After it is done installing, load RVM.</p>
+
+<pre><code>source ~/.rvm/scripts/rvm
+</code></pre>
+
+<p>In order to work, RVM has some of its own dependancies that need to be installed.</p>
+
+<pre><code>rvm requirements
+</code></pre>
+
+<h3 id="install-ruby-for-rosa-user">Install Ruby (for <code>rosa</code> user):</h3>
+
+<p>Once you are using RVM, installing Ruby is easy.</p>
+
+<pre><code>rvm install ruby-2.1.3
+</code></pre>
+
+<p>Ruby is now installed. However, since we accessed it through a program that has a variety of Ruby versions, we need to tell the system to use 2.1.3 by default.</p>
+
+<pre><code>rvm use ruby-2.1.3 --default
+</code></pre>
+
+<h3 id="install-rubygems-for-rosa-user">Install RubyGems (for <code>rosa</code> user):</h3>
+
+<p>The next step makes sure that we have all the required components of Ruby on Rails. We can continue to use RVM to install gems; type this line into terminal.</p>
+
+<pre><code>rvm rubygems current
+</code></pre>
+
+<h3 id="install-postgresql">Install PostgreSQL</h3>
+
+<p>See solution by installation: <a href="http://www.if-not-true-then-false.com/2012/install-postgresql-on-fedora-centos-red-hat-rhel">Install PostgreSQL</a></p>
+
+<p>The next step updates <code>.bashrc</code> file:</p>
+
+<pre><code>PATH=/usr/pgsql-9.2/bin:$PATH
+</code></pre>
+
+<h2 id="prepare-server-to-deployment">Prepare server to deployment</h2>
+
+<h3 id="create-folders-for-web">Create folders for web:</h3>
+
+<pre><code>sudo mkdir -p /srv/rosa_file_store/shared/tmp &amp;&amp; sudo chown -R rosa:rosa /srv
+</code></pre>
+
+<h3 id="configure-ssh-access-for-rosa-user">Configure ssh access for <code>rosa</code> user</h3>
+
+<pre><code>sudo mkdir -p /home/rosa/.ssh &amp;&amp; sudo touch /home/rosa/.ssh/authorized_keys &amp;&amp;
+sudo chmod 600 /home/rosa/.ssh/authorized_keys &amp;&amp;
+sudo chown -R rosa:rosa /home/rosa
+</code></pre>
+
+<p>Add Your public key into <code>/home/rosa/.ssh/authorized_keys</code></p>
+
+<h3 id="configure-postgresql">Configure PostgreSQL</h3>
+
+<p>Change to <code>postgres</code> user</p>
+
+<pre><code>sudo su postgres
+</code></pre>
+
+<p>Create new user</p>
+
+<pre><code>createuser -D -P -E -e rosa
+Enter password for new role: rosa
+Enter it again: rosa
+Shall the new role be a superuser? (y/n) n
+Shall the new role be allowed to create more new roles? (y/n) n
+</code></pre>
+
+<p>Create database</p>
+
+<pre><code>createdb -O rosa -e rosa_file_store
+</code></pre>
+
+<h3 id="configure-nginx">Configure Nginx</h3>
+
+<pre><code>mkdir /home/rosa/nginx
+sudo -i
+wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.31.tar.gz
+tar -xf pcre-8.31.tar.gz
+cd /home/rosa/nginx/pcre-8.31
+./configure
+make &amp;&amp; make install
+
+cd ..
+wget http://nginx.org/download/nginx-1.3.8.tar.gz
+tar -xf nginx-1.3.8.tar.gz
+
+wget https://github.com/downloads/masterzen/nginx-upload-progress-module/nginx_uploadprogress_module-0.9.0.tar.gz
+wget http://www.grid.net.ru/nginx/download/nginx_upload_module-2.2.0.tar.gz
+
+tar -xf nginx_uploadprogress_module-0.9.0.tar.gz
+tar -xf nginx_upload_module-2.2.0.tar.gz
+
+cd /home/rosa/nginx/nginx-1.3.8
+./configure --prefix=/usr/share/nginx \
+--sbin-path=/usr/sbin/nginx \
+--conf-path=/etc/nginx/nginx.conf \
+--error-log-path=/var/log/nginx/error.log \
+--http-log-path=/var/log/nginx/access.log \
+--with-http_flv_module \
+--with-http_ssl_module \
+--with-http_gzip_static_module \
+--add-module=/home/rosa/nginx/modules/upload \
+--add-module=/home/rosa/nginx/modules/upload-progress \
+make &amp;&amp; make install
+
+## fix nginx: error while loading shared libraries:
+## libpcre.so.1: cannot open shared object file: No such file or directory
+ln -s /usr/local/lib/libpcre.so.1 /lib64 
+</code></pre>
+
+<p>Start <code>nginx</code> on Boot:</p>
+
+<pre><code>sudo chkconfig --levels 2345 nginx on
+service nginx stop
+service nginx start
+</code></pre>
+
+<h3 id="configure-iptables">Configure iptables</h3>
+
+<p>Update <code>/etc/sysconfig/iptables</code> file:</p>
+
+<ul>
+  <li>add <code>-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT</code> line </li>
+</ul>
+
+<p>Then restart iptables:</p>
+
+<pre><code>sudo service iptables restart
+</code></pre>
+
+<h2 id="startup-file-store">Startup File-Store</h2>
+
+<p>On DEV machine:</p>
+
+<pre><code>cap production deploy:setup
+cap production deploy:check
+cap production deploy:update
+</code></pre>
+
+<p>On server:</p>
+
+<pre><code>cd /srv/rosa_file_store/current &amp;&amp; RAILS_ENV=production bundle exec rake db:seed
+</code></pre>
+
+<p>Update all configuration files:</p>
+
+<pre><code>/srv/rosa_file_store/shared/config/application.yml
+/srv/rosa_file_store/shared/config/newrelic.yml
+</code></pre>
+
+<p>Startup:</p>
+
+<pre><code>cap production deploy:start
+</code></pre>
+
+      </div>
+
+    <div id="js-sidebar" class="sidebar-shell">
+      <div class="js-toggle-list sidebar-module expandable">
+        <ul>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/abf/">ABF</a></h3>
+            <ul class="js-guides">
+              <li><a href="/abf/api/">API</a></li>
+              <li class='submenu'><a href="/abf/api/v1/advisories/">Advisories</a></li>
+              <li class='submenu'><a href="/abf/api/v1/architectures/">Architectures</a></li>
+              <li class='submenu'><a href="/abf/api/v1/build_lists/">Build lists</a></li>
+              <li class='submenu'><a href="/abf/api/v1/groups/">Groups</a></li>
+              <li class='submenu'><a href="/abf/api/v1/issues/">Issues</a></li>
+              <li class='submenu'><a href="/abf/api/v1/maintainers/">Maintainers</a></li>
+              <li class='submenu'><a href="/abf/api/v1/platforms/">Platforms</a></li>
+              <li class='submenu'><a href="/abf/api/v1/products/">Products</a></li>
+              <li class='submenu'><a href="/abf/api/v1/product_build_lists/">Product Build Lists</a></li>
+              <li class='submenu'><a href="/abf/api/v1/projects/">Projects</a></li>
+              <li class='submenu'><a href="/abf/api/v1/pull_requests/">Pull Requests</a></li>
+              <li class='submenu'><a href="/abf/api/v1/repositories/">Repositories</a></li>
+              <li class='submenu'><a href="/abf/api/v1/search/">Search</a></li>
+              <li class='submenu'><a href="/abf/api/v1/users/">Users</a></li>
+
+              <li><a href="/abf/file_store_integration/">Integration with FileStore (.abf.yml)</a></li>
+              <li><a href="/abf/iso_build/">ISO build environment</a></li>
+
+              <li><a href="/abf/scripts/">Package build environment</a></li>
+              <li class='submenu'><a href="/abf/scripts/assembly_of_packages/">Assembly of packages</a></li>
+              <li class='submenu'><a href="/abf/scripts/publication_of_packages/">Publication of packages</a></li>
+
+              <li><a href="/abf/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/abf/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf/deployment/rels_centos/">RELS/CentOS</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf/deployment/ubuntu/">Ubuntu</a>
+              </li>
+            </ul>
+          </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/file_store/">File Store</a></h3>
+            <ul class="js-guides">
+              <li><a href="/file_store/api/">API</a></li>
+              <li class='submenu'><a href="/file_store/api/v1/files/">Files</a></li>
+
+              <li><a href="/file_store/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/file_store/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/file_store/deployment/manual/">Manual</a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/abf_worker/">ABF-Worker</a></h3>
+            <ul class="js-guides">
+              <li><a href="/abf_worker/build_boxes/">Build boxes</a></li>
+              <li><a href="/abf_worker/deployment/">Deployment</a></li>
+              <li class='submenu'>
+                <a href="/abf_worker/deployment/ansible/">Ansible</a>
+              </li>
+              <li class='submenu'>
+                <a href="/abf_worker/deployment/manual/">Manual</a>
+              </li>
+            </ul>
+          </li>
+
+        </ul>
+      </div> <!-- /sidebar-module -->
+      <div class="sidebar-module">
+        <p>
+          These websites are <a href="https://abf.rosalinux.ru" target="_blank">ABF</a>
+          and <a href="https://file-store.rosalinux.ru" target="_blank">File Store</a>
+        </p>
+      </div>
+    </div><!-- /sidebar-shell -->
+
+    </div><!-- #wrapper -->
+
+    <div id="footer" >
+      <div class="upper_footer">
+        <div class="footer_inner clearfix">
+          <h4 id="blacktocat">ABF Links</h4>
+        <ul class="footer_nav">
+          <h4>RosaLab</h4>
+		  <li><a href="http://www.rosalab.com/about">About</a></li>
+		  <li><a href="https://abf.rosalinux.ru/contact">Contact &amp; Support</a></li>
+        </ul>
+
+        <ul class="footer_nav">
+        </ul>
+
+        <ul class="footer_nav">
+        </ul>
+
+        <ul class="footer_nav">
+          <h4>Documentation</h4>
+		  <li><a href="http://wiki.rosalab.ru/en/index.php/ABF_Getting_Started">ABF Help</a></li>
+		  <li><a href="http://abf-doc.rosalinux.ru/">Developer API</a></li>
+        </ul>
+
+        </div><!-- /.site -->
+      </div><!-- /.upper_footer -->
+
+      <div class="lower_footer">
+        <div class="footer_inner clearfix">
+            <div id="legal">
+
+              <a class="home" href="http://abf.rosalinux.ru">Home</a>
+
+              <ul id="legal_links">
+              </ul>
+
+              <p>&copy; <span id="year">year</span> RosaLab. All rights reserved.</p>
+            </div><!-- /#legal or /#legal_ie-->
+        </div><!-- /.site -->
+      </div><!-- /.lower_footer -->
+    </div><!-- /#footer -->
+</body>
+</html>
